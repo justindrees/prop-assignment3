@@ -74,8 +74,9 @@ parse(-ParseTree)-->
 ***/
 
 % TODO: the DCG below is a work in progress. A lot of things are wrong. Needs fixing.
+%assignment(assignment([Identifier,Expression])) --> assignment([Identifier,Expression]).
+assignment(assignment([Identifier,Expression])) --> ident(Identifier), expression(Expression).
 assignment([Identifier]) --> ident(Identifier).
-assignment([Identifier|Expression]) --> ident(Identifier), expression(Expression).
 
 ident(ident(Variable)) --> [Variable], {atom(Variable)}.
 
@@ -85,7 +86,7 @@ value(number(Number)) --> [Number], {number(Number)}.
 expression(assign_op|Expression) --> assign_op, rest_expression(Expression).
 
 rest_expression([Value]) --> value(Value).
-rest_expression([Value|Expression]) --> operator(Value), rest_expression(Expression).
+%rest_expression([Value,Expression]) --> operator(Value), rest_expression(Expression).
 rest_expression([operator(Operator,Value)|Expression]) --> operator(Operator), value(Value), rest_expression(Expression).
 rest_expression([operator(Operator,Value)]) --> operator(Operator), value(Value).
 
@@ -101,8 +102,9 @@ right_paren --> [')']. /* TODO: Check if this works. */
 expvalue(L,V) :- assignment(V,L,[]).
 
 parse(ParseTree, Program, []):-
-	expvalue(Program, V),
-	write('Output of parser: '), write(V), write('\n').
+	%expvalue(Program, V),
+	assignment(ParseTree,Program,[]),
+	write('Output of parser: '), write(ParseTree), write('\n').
 	%write('Not implemented yet').
 
 /*** OLD CODE
