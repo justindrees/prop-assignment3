@@ -7,9 +7,10 @@ Peter Idestam-Almquist, 2014-12-23.
 
 run(InputFile,OutputFile):-
 	tokenize(InputFile,Program),
-	parse(ParseTree,Program,[]),
-	evaluate(ParseTree,[],VariablesOut), 
-	output_result(OutputFile,ParseTree,VariablesOut).
+	parse(ParseTree,Program,[]).
+	% Uncomment the next two lines once evaluate is implemented
+	%evaluate(ParseTree,[],VariablesOut),
+	%output_result(OutputFile,ParseTree,VariablesOut).
 
 output_result(OutputFile,ParseTree,Variables):- 
 	open(OutputFile,write,OutputStream),
@@ -68,9 +69,61 @@ write_list(Stream,[Ident = Value|Vars]):-
 	
 /***
 parse(-ParseTree)-->
-	TODO: Implement a definite clause grammar defining our programming language,
+	TODO: Implement a definite clause grammar (DCG) defining our programming language,
 	and returning a parse tree.
 ***/
+
+% TODO: the DCG below is a work in progress. A lot of things are wrong. Needs fixing.
+assignment([Identifier]) --> ident(Identifier).
+assignment([Identifier|Expression]) --> ident(Identifier), expression(Expression).
+
+ident(ident(Variable)) --> [Variable], {atom(Variable)}.
+
+value(variable(Variable)) --> [Variable], {atom(Variable)}.
+value(number(Number)) --> [Number], {number(Number)}.
+
+expression(assign_op|Expression) --> assign_op, rest_expression(Expression).
+
+rest_expression([Value]) --> value(Value).
+rest_expression([Value|Expression]) --> operator(Value), rest_expression(Expression).
+rest_expression([operator(Operator,Value)|Expression]) --> operator(Operator), value(Value), rest_expression(Expression).
+rest_expression([operator(Operator,Value)]) --> operator(Operator), value(Value).
+
+assign_op --> [=].
+operator(+) --> [+].
+operator(-) --> [-].
+operator(*) --> [*].
+operator(/) --> ['/']. /* TODO: Fix. This doesn't work. */
+left_paren --> ['(']. /* TODO: Check if this works. */
+right_paren --> [')']. /* TODO: Check if this works. */
+%operator(';') --> [';']. /* TODO: Fix. Make this work. */
+
+expvalue(L,V) :- assignment(V,L,[]).
+
+parse(ParseTree, Program, []):-
+	expvalue(Program, V),
+	write('Output of parser: '), write(V), write('\n').
+	%write('Not implemented yet').
+
+/*** OLD CODE
+assignment([Variable|Expression]) --> ident(Variable), expression(Expression).
+ 
+ident(ident(Variable)) --> [Variable], {atom(Variable)}.
+
+value(variable(Variable)) --> [Variable], {atom(Variable)}.
+value(number(Number)) --> [Number], {number(Number)}.
+
+expression(assign_op|Expression) --> assign_op, rest_expression(Expression).
+
+rest_expression([Value|Expression]) --> operator(Value), rest_expression(Expression).
+rest_expression([operator(Operator,Value)|Expression]) --> operator(Operator), value(Value), rest_expression(Expression).
+rest_expression([operator(Operator,Value)]) --> operator(Operator), value(Value).
+
+assign_op --> [=].
+operator(+) --> [+].
+operator(-) --> [-].
+operator(*) --> [*].
+*/
 
 	
 /***
@@ -80,3 +133,5 @@ evaluate(+ParseTree,+VariablesIn,-VariablesOut):-
 	their values.
 ***/
 
+% Define main so that the program builds
+main :- run('program_test.txt', OutputFile), write(OutputFile).

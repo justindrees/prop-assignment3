@@ -13,7 +13,10 @@ tokenize(File,Tokens):-
 	close(InputStream).
 
 read_from_file(InputStream,Lines2):-
-	read_line(InputStream,Line), 
+	%read_line(InputStream,Line), 
+	% Commented out read_line above since it's defined in SiCStus Prolog but not SWI-Prolog.
+	% In the line below we used SWI-Prolog built-in predicate read_line_to_codes
+	read_line_to_codes(InputStream,Line), 
 	Line \= end_of_file, !,
 	read_from_file(InputStream,Lines1), 
 	append(Line,[32|Lines1],Lines2). /* 32 = ' ' */
