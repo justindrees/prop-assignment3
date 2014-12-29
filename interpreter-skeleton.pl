@@ -11,7 +11,7 @@ run(InputFile,OutputFile):-
 	% Uncomment the next two lines once evaluate is implemented
 	%evaluate(ParseTree,[],VariablesOut),
 	%output_result(OutputFile,ParseTree,VariablesOut).
-
+	
 output_result(OutputFile,ParseTree,Variables):- 
 	open(OutputFile,write,OutputStream),
 	write(OutputStream,'PARSE TREE:'), 
@@ -75,58 +75,43 @@ parse(-ParseTree)-->
 
 % TODO: the DCG below is a work in progress. A lot of things are wrong. Needs fixing.
 %assignment(assignment([Identifier,Expression])) --> assignment([Identifier,Expression]).
-assignment(assignment([Identifier,Expression])) --> ident(Identifier), expression(Expression).
-assignment([Identifier]) --> ident(Identifier).
+%assignment([Identifier,Expression]) --> ident(Identifier), expression(Expression).
+
+%assignment(assignment([Identifier,Expression])) --> ident(Identifier), expression(Expression).
+%assignment(assignment(Identifier,Expression)) --> ident(Identifier), assign_op(Expression).
+assignment(assignment(Identifier, assign_op, Expression)) --> ident(Identifier), assign_op, expression(Expression).
 
 ident(ident(Variable)) --> [Variable], {atom(Variable)}.
+
+%assign_op([assign_op,Expression]) --> assign_op, expression(Expression).
+assign_op --> [=].
 
 value(variable(Variable)) --> [Variable], {atom(Variable)}.
 value(number(Number)) --> [Number], {number(Number)}.
 
-expression(assign_op|Expression) --> assign_op, rest_expression(Expression).
+%expression(expression([assign_op|Expression])) --> assign_op, term(Expression).
+%expression(expression([Value|Expression])) --> assign_op, term(Value).
+expression(expression([Term])) --> term(Term).
 
-rest_expression([Value]) --> value(Value).
-%rest_expression([Value,Expression]) --> operator(Value), rest_expression(Expression).
-rest_expression([operator(Operator,Value)|Expression]) --> operator(Operator), value(Value), rest_expression(Expression).
-rest_expression([operator(Operator,Value)]) --> operator(Operator), value(Value).
+term([Value]) --> value(Value).
+%rest_expression([Value,Expression]) --> operator(Value), term(Expression).
+term(term([operator(Operator,Value)|Expression])) --> operator(Operator), value(Value), term(Expression).
+term(term([operator(Operator,Value)])) --> operator(Operator), value(Value).
 
-assign_op --> [=].
+equal --> ['='].
 operator(+) --> [+].
 operator(-) --> [-].
 operator(*) --> [*].
 operator(/) --> ['/']. /* TODO: Fix. This doesn't work. */
 left_paren --> ['(']. /* TODO: Check if this works. */
 right_paren --> [')']. /* TODO: Check if this works. */
-%operator(';') --> [';']. /* TODO: Fix. Make this work. */
+semicolon --> [';']. /* TODO: Make this work. */
 
-expvalue(L,V) :- assignment(V,L,[]).
 
 parse(ParseTree, Program, []):-
-	%expvalue(Program, V),
 	assignment(ParseTree,Program,[]),
+	% The line below is for displaying the output to the console to check if the parser works. Remove before handing in the assignment.
 	write('Output of parser: '), write(ParseTree), write('\n').
-	%write('Not implemented yet').
-
-/*** OLD CODE
-assignment([Variable|Expression]) --> ident(Variable), expression(Expression).
- 
-ident(ident(Variable)) --> [Variable], {atom(Variable)}.
-
-value(variable(Variable)) --> [Variable], {atom(Variable)}.
-value(number(Number)) --> [Number], {number(Number)}.
-
-expression(assign_op|Expression) --> assign_op, rest_expression(Expression).
-
-rest_expression([Value|Expression]) --> operator(Value), rest_expression(Expression).
-rest_expression([operator(Operator,Value)|Expression]) --> operator(Operator), value(Value), rest_expression(Expression).
-rest_expression([operator(Operator,Value)]) --> operator(Operator), value(Value).
-
-assign_op --> [=].
-operator(+) --> [+].
-operator(-) --> [-].
-operator(*) --> [*].
-*/
-
 	
 /***
 evaluate(+ParseTree,+VariablesIn,-VariablesOut):-
@@ -135,5 +120,7 @@ evaluate(+ParseTree,+VariablesIn,-VariablesOut):-
 	their values.
 ***/
 
-% Define main so that the program builds
+% Define main so that the program builds.
+% Using 'program_test.txt' right now while implementing since it has a simpler assignment statement than 'program1.txt'
+% Change'program_test.txt' to 'program1.txt' before handing in the assignment.
 main :- run('program_test.txt', OutputFile), write(OutputFile).
