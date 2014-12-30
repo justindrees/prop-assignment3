@@ -7,6 +7,7 @@ Peter Idestam-Almquist, 2014-12-23.
 
 run(InputFile,OutputFile):-
 	tokenize(InputFile,Program),
+	write(Program), write('\n'),
 	parse(ParseTree,Program,[]).
 	% Uncomment the next two lines once evaluate is implemented
 	%evaluate(ParseTree,[],VariablesOut),
@@ -77,28 +78,26 @@ parse(-ParseTree)-->
 %assignment(assignment([Identifier,Expression])) --> assignment([Identifier,Expression]).
 %assignment([Identifier,Expression]) --> ident(Identifier), expression(Expression).
 
-%assignment(assignment([Identifier,Expression])) --> ident(Identifier), expression(Expression).
-%assignment(assignment(Identifier,Expression)) --> ident(Identifier), assign_op(Expression).
 assignment(assignment(Identifier, assign_op, Expression, semicolon)) --> ident(Identifier), assign_op, expression(Expression), semicolon.
 
 ident(ident(Variable)) --> [Variable], {atom(Variable)}.
 
-%assign_op([assign_op,Expression]) --> assign_op, expression(Expression).
 assign_op --> [=].
 
-value(variable(Variable)) --> [Variable], {atom(Variable)}.
-value(int(Number)) --> [Number], {integer(Number)}.
-
-%expression(expression([assign_op|Expression])) --> assign_op, term(Expression).
-%expression(expression([Value|Expression])) --> assign_op, term(Value).
 expression(expression(Term, Operator, Expression)) --> term(Term), operator(Operator), expression(Expression).
-expression(Operator) --> operator(Operator).
 expression(expression(Term)) --> term(Term).
+expression(left_paren, Expression, right_paren) --> left_paren, expression(Expression), right_paren. /* TODO: Fix. This doesn't work. */
+% Note: it matches left_paren or right_paren individually, but it doesn't match left_paren and right_paren together. Not sure why?
 
-term(term(Value)) --> value(Value).
-%rest_expression([Value,Expression]) --> operator(Value), term(Expression).
-term(term([operator(Operator,Value)|Expression])) --> operator(Operator), value(Value), term(Expression).
-term(term([operator(Operator,Value)])) --> operator(Operator), value(Value).
+term(term(Factor, Operator, Term)) --> factor(Factor), operator(Operator), term(Term).
+term(term(Factor)) --> factor(Factor).
+
+factor(factor(Value)) --> value(Value).
+factor(Value, Operator, Term) --> value(Value), Operator, term(Term).
+factor(left_paren, Expression, right_paren) --> left_paren, expression(Expression), right_paren.
+
+%value(variable(Variable)) --> [Variable], {letter_code(Variable))}. /* Remove this */
+value(int(Number)) --> [Number], {integer(Number)}.
 
 operator(add_op) --> [+].
 operator(sub_op) --> [-].
