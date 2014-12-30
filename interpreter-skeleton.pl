@@ -79,7 +79,7 @@ parse(-ParseTree)-->
 
 %assignment(assignment([Identifier,Expression])) --> ident(Identifier), expression(Expression).
 %assignment(assignment(Identifier,Expression)) --> ident(Identifier), assign_op(Expression).
-assignment(assignment(Identifier, assign_op, Expression)) --> ident(Identifier), assign_op, expression(Expression).
+assignment(assignment(Identifier, assign_op, Expression, semicolon)) --> ident(Identifier), assign_op, expression(Expression), semicolon.
 
 ident(ident(Variable)) --> [Variable], {atom(Variable)}.
 
@@ -87,25 +87,26 @@ ident(ident(Variable)) --> [Variable], {atom(Variable)}.
 assign_op --> [=].
 
 value(variable(Variable)) --> [Variable], {atom(Variable)}.
-value(number(Number)) --> [Number], {number(Number)}.
+value(int(Number)) --> [Number], {integer(Number)}.
 
 %expression(expression([assign_op|Expression])) --> assign_op, term(Expression).
 %expression(expression([Value|Expression])) --> assign_op, term(Value).
-expression(expression([Term])) --> term(Term).
+expression(expression(Term, Operator, Expression)) --> term(Term), operator(Operator), expression(Expression).
+expression(Operator) --> operator(Operator).
+expression(expression(Term)) --> term(Term).
 
-term([Value]) --> value(Value).
+term(term(Value)) --> value(Value).
 %rest_expression([Value,Expression]) --> operator(Value), term(Expression).
 term(term([operator(Operator,Value)|Expression])) --> operator(Operator), value(Value), term(Expression).
 term(term([operator(Operator,Value)])) --> operator(Operator), value(Value).
 
-equal --> ['='].
-operator(+) --> [+].
-operator(-) --> [-].
-operator(*) --> [*].
-operator(/) --> ['/']. /* TODO: Fix. This doesn't work. */
+operator(add_op) --> [+].
+operator(sub_op) --> [-].
+operator(mult_op) --> [*].
+operator(div_op) --> [/].
 left_paren --> ['(']. /* TODO: Check if this works. */
 right_paren --> [')']. /* TODO: Check if this works. */
-semicolon --> [';']. /* TODO: Make this work. */
+semicolon --> [';'].
 
 
 parse(ParseTree, Program, []):-
