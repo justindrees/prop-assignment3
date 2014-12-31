@@ -7,7 +7,7 @@ Peter Idestam-Almquist, 2014-12-23.
 
 run(InputFile,OutputFile):-
 	tokenize(InputFile,Program),
-	write(Program), write('\n'),
+	write('This is the Program: '), write(Program), write('\n'), /* Display result of tokenizer to help debugging. Remove before handing in assignment. */
 	parse(ParseTree,Program,[]).
 	% Uncomment the next two lines once evaluate is implemented
 	%evaluate(ParseTree,[],VariablesOut),
@@ -86,18 +86,17 @@ assign_op --> [=].
 
 expression(expression(Term, Operator, Expression)) --> term(Term), operator(Operator), expression(Expression).
 expression(expression(Term)) --> term(Term).
-expression(left_paren, Expression, right_paren) --> left_paren, expression(Expression), right_paren. /* TODO: Fix. This doesn't work. */
-% Note: it matches left_paren or right_paren individually, but it doesn't match left_paren and right_paren together. Not sure why?
 
 term(term(Factor, Operator, Term)) --> factor(Factor), operator(Operator), term(Term).
 term(term(Factor)) --> factor(Factor).
 
 factor(factor(Value)) --> value(Value).
-factor(Value, Operator, Term) --> value(Value), Operator, term(Term).
-factor(left_paren, Expression, right_paren) --> left_paren, expression(Expression), right_paren.
+factor(factor(Value), Operator, Term)) --> value(Value), operator(Operator), term(Term).
+factor(factor(left_paren, Expression, right_paren)) --> left_paren, expression(Expression), right_paren.
+factor(factor(left_paren, Expression)) --> left_paren, factor(Expression).
 
-%value(variable(Variable)) --> [Variable], {letter_code(Variable))}. /* Remove this */
 value(int(Number)) --> [Number], {integer(Number)}.
+value(variable(Variable)) --> [Variable], {atom(Variable)}.
 
 operator(add_op) --> [+].
 operator(sub_op) --> [-].
