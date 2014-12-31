@@ -73,11 +73,7 @@ parse(-ParseTree)-->
 	TODO: Implement a definite clause grammar (DCG) defining our programming language,
 	and returning a parse tree.
 ***/
-
-% TODO: the DCG below is a work in progress. A lot of things are wrong. Needs fixing.
-%assignment(assignment([Identifier,Expression])) --> assignment([Identifier,Expression]).
-%assignment([Identifier,Expression]) --> ident(Identifier), expression(Expression).
-
+% TODO: the DCG below is a work in progress.
 assignment(assignment(Identifier, assign_op, Expression, semicolon)) --> ident(Identifier), assign_op, expression(Expression), semicolon.
 
 ident(ident(Variable)) --> [Variable], {atom(Variable)}.
@@ -91,9 +87,8 @@ term(term(Factor, Operator, Term)) --> factor(Factor), operator(Operator), term(
 term(term(Factor)) --> factor(Factor).
 
 factor(factor(Value)) --> value(Value).
-factor(factor(Value), Operator, Term)) --> value(Value), operator(Operator), term(Term).
+factor(factor(Value, Operator, Term)) --> value(Value), operator(Operator), term(Term).
 factor(factor(left_paren, Expression, right_paren)) --> left_paren, expression(Expression), right_paren.
-factor(factor(left_paren, Expression)) --> left_paren, factor(Expression).
 
 value(int(Number)) --> [Number], {integer(Number)}.
 value(variable(Variable)) --> [Variable], {atom(Variable)}.
@@ -102,15 +97,15 @@ operator(add_op) --> [+].
 operator(sub_op) --> [-].
 operator(mult_op) --> [*].
 operator(div_op) --> [/].
-left_paren --> ['(']. /* TODO: Check if this works. */
-right_paren --> [')']. /* TODO: Check if this works. */
+left_paren --> ['('].
+right_paren --> [')'].
 semicolon --> [';'].
 
 
 parse(ParseTree, Program, []):-
 	assignment(ParseTree,Program,[]),
 	% The line below is for displaying the output to the console to check if the parser works. Remove before handing in the assignment.
-	write('Output of parser: '), write(ParseTree), write('\n').
+	write('Output of parser:\n'), write(ParseTree), write('\n').
 	
 /***
 evaluate(+ParseTree,+VariablesIn,-VariablesOut):-
@@ -120,6 +115,6 @@ evaluate(+ParseTree,+VariablesIn,-VariablesOut):-
 ***/
 
 % Define main so that the program builds.
-% Using 'program_test.txt' right now while implementing since it has a simpler assignment statement than 'program1.txt'
+% Using 'program_test.txt' right now while implementing to test different assignment statement than 'program1.txt'
 % Change'program_test.txt' to 'program1.txt' before handing in the assignment.
 main :- run('program_test.txt', OutputFile), write(OutputFile).
