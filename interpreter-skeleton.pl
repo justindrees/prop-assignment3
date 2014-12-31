@@ -101,7 +101,8 @@ left_paren --> ['('].
 right_paren --> [')'].
 semicolon --> [';'].
 
-
+% Note: I'm not sure if this is the right way to implement the head for the parser.
+% This is the only way I could figure out so that the output of the parser is printed to console so it's easier to debug.
 parse(ParseTree, Program, []):-
 	assignment(ParseTree,Program,[]),
 	% The line below is for displaying the output to the console to check if the parser works. Remove before handing in the assignment.
@@ -115,6 +116,4 @@ evaluate(+ParseTree,+VariablesIn,-VariablesOut):-
 ***/
 
 % Define main so that the program builds.
-% Using 'program_test.txt' right now while implementing to test different assignment statement than 'program1.txt'
-% Change'program_test.txt' to 'program1.txt' before handing in the assignment.
-main :- run('program_test.txt', OutputFile), write(OutputFile).
+main :- run('program1.txt', OutputFile), write(OutputFile).
