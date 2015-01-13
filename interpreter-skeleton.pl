@@ -8,10 +8,13 @@ Peter Idestam-Almquist, 2014-12-23.
 run(InputFile,OutputFile):-
 	tokenize(InputFile,Program),
 	write('This is the Program: '), write(Program), write('\n'), /* Display result of tokenizer to help debugging. Remove before handing in assignment. */
-	parse(ParseTree,Program,[]).
+	parse(ParseTree,Program,[]),
+	%open('outfile',write,OutputStream),
+	%writeln_term(OutputStream,0,ParseTree).
+
 	% Uncomment the next two lines once evaluate is implemented
 	%evaluate(ParseTree,[],VariablesOut),
-	%output_result(OutputFile,ParseTree,VariablesOut).
+	output_result(OutputFile,ParseTree,VariablesOut).
 	
 output_result(OutputFile,ParseTree,Variables):- 
 	open(OutputFile,write,OutputStream),
@@ -73,14 +76,14 @@ parse(-ParseTree)-->
 	TODO: Implement a definite clause grammar (DCG) defining our programming language,
 	and returning a parse tree.
 ***/
-% TODO: the DCG below is a work in progress.
+
 assignment(assignment(Identifier, assign_op, Expression, semicolon)) --> ident(Identifier), assign_op, expression(Expression), semicolon.
 
 ident(ident(Variable)) --> [Variable], {atom(Variable)}.
 
 assign_op --> [=].
 
-expression(expression(Term, Operator, Expression)) --> term(Term), operator(Operator), expression(Expression).
+expression(expression(Term, Operator, Expression)) --> term(Term), exp_operator(Operator), expression(Expression).
 expression(expression(Term)) --> term(Term).
 
 term(term(Factor, Operator, Term)) --> factor(Factor), operator(Operator), term(Term).
@@ -93,8 +96,8 @@ factor(factor(left_paren, Expression, right_paren)) --> left_paren, expression(E
 value(int(Number)) --> [Number], {integer(Number)}.
 value(variable(Variable)) --> [Variable], {atom(Variable)}.
 
-operator(add_op) --> [+].
-operator(sub_op) --> [-].
+exp_operator(add_op) --> [+].
+exp_operator(sub_op) --> [-].
 operator(mult_op) --> [*].
 operator(div_op) --> [/].
 left_paren --> ['('].

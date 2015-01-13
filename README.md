@@ -12,7 +12,7 @@ Step 3: Install Prolog Package for Sublime
 http://duke-pl-course.github.io/blog/2013/01/15/setting-up-sublime-text-2/
 
 
-Example on how to build SWI-Prolog in Sublime:
+Here's an example on how to build SWI-Prolog in Sublime:
 http://stackoverflow.com/questions/19647851/swi-prolog-plugin-on-sublime-build-error
 
 Tutorial for SWI-Prolog
