@@ -10,6 +10,8 @@ run(InputFile,OutputFile):-
 	write('This is the Program: '), write(Program), write('\n'), /* Display result of tokenizer to help debugging. Remove before handing in assignment. */
 	parse(ParseTree,Program,[]),
 	open('outfile',write,OutputStream),
+	write(OutputStream,'PARSE TREE:'), 
+	nl(OutputStream), 
 	writeln_term(OutputStream,0,ParseTree).
 
 	% Uncomment the next two lines once evaluate is implemented
