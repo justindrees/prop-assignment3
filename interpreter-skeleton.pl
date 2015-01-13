@@ -9,12 +9,12 @@ run(InputFile,OutputFile):-
 	tokenize(InputFile,Program),
 	write('This is the Program: '), write(Program), write('\n'), /* Display result of tokenizer to help debugging. Remove before handing in assignment. */
 	parse(ParseTree,Program,[]),
-	%open('outfile',write,OutputStream),
-	%writeln_term(OutputStream,0,ParseTree).
+	open('outfile',write,OutputStream),
+	writeln_term(OutputStream,0,ParseTree).
 
 	% Uncomment the next two lines once evaluate is implemented
 	%evaluate(ParseTree,[],VariablesOut),
-	output_result(OutputFile,ParseTree,VariablesOut).
+	%output_result(OutputFile,ParseTree,VariablesOut).
 	
 output_result(OutputFile,ParseTree,Variables):- 
 	open(OutputFile,write,OutputStream),
